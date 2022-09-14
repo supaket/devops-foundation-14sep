@@ -1,5 +1,5 @@
 # Extending image
-FROM node:14
+FROM node:14 as build
 
 # RUN apt-get update
 # RUN apt-get upgrade -y
@@ -22,6 +22,13 @@ RUN npm install
 # Bundle app source
 COPY . /usr/src/app
 
+
+
+RUN npm run build
+
+FROM node:14 
+WORKDIR /usr/src/app
+COPY --from=build /usr/src/app/.next /usr/src/app/.next
 # Port to listener
 EXPOSE 3000
 
@@ -29,8 +36,5 @@ EXPOSE 3000
 ENV NODE_ENV production
 ENV PORT 3000
 ENV PUBLIC_PATH "/"
-
-RUN npm run build
-
 # Main command
 CMD [ "npm", "run", "start" ]
